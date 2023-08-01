@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo List</title>
+  <style>
+    .todo-name {
+      height: 40px;
+      border-radius: 10px;
+    }
+
+    .todo-date {
+      height: 40px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .js-add-todo-button {
+      background-color: rgb(38, 226, 38);
+      height: 40px;
+      border: 0px;
+      color: white;
+      border-radius: 10px;
+      font-family: 'Courier New', Courier, monospace;
+      width: 70px;
+    }
+
+    .js-add-todo-button:hover {
+      background-color: rgb(6, 121, 6);
+      height: 30px;
+      border: 0px;
+      color: white;
+      border-radius: 10px;
+      font-family: 'Courier New', Courier, monospace;
+      transition: 0.5s;
+    }
+
+    /* Add new style for each todo item to display them in a single row */
+    .todo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .todo-item .delete-todo-button {
+      background-color: red;
+      color: white;
+      border: 0;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .todo-item .delete-todo-button:hover {
+      background-color: #cc0000;
+    }
+  </style>
+</head>
+<body>
+  <h2>Todo List</h2>
+  <div class="todo-input-grid">
+    <input type="text" class="todo-name" placeholder="Todo Name">
+    <input type="date" class="todo-date">
+    <button class="js-add-todo-button">Add</button>
+  </div>
+  <div class="js-todo-list todo-grid"></div>
+
+  <script>
+    // Check for stored todo list data in local storage
+    const storedTodoList = localStorage.getItem('todoList');
+    const todoList = storedTodoList ? JSON.parse(storedTodoList) : [];
+
+    renderTodoList();
+
+    function renderTodoList() {
+      let todoListHTML = '';
+
+      todoList.forEach((todoObject, index) => {
+        const { name, dueDate } = todoObject;
+        const html = `
+          <div class="todo-item">
+            <div>${name}</div>
+            <div>${dueDate}</div>
+            <button class="delete-todo-button js-delete-todo-button" data-index="${index}">Delete</button>
+          </div>
+        `;
+        todoListHTML += html;
+      });
+
+      document.querySelector('.js-todo-list').innerHTML = todoListHTML;
+
+      document.querySelectorAll('.js-delete-todo-button').forEach((deleteButton) => {
+        deleteButton.addEventListener('click', () => {
+          const index = deleteButton.dataset.index;
+          todoList.splice(index, 1);
+          renderTodoList();
+        });
+      });
+    }
+
+    document.querySelector('.js-add-todo-button').addEventListener('click', () => {
+      addTodo();
+    });
+
+    function addTodo() {
+      const inputElement = document.querySelector('.todo-name');
+      const name = inputElement.value;
+
+      const dateInputElement = document.querySelector('.todo-date');
+      const dueDate = dateInputElement.value;
+
+      todoList.push({
+        name,
+        dueDate
+      });
+
+      inputElement.value = '';
+      dateInputElement.value = '';
+
+      // Store the updated todo list in local storage
+      localStorage.setItem('todoList', JSON.stringify(todoList));
+
+      renderTodoList();
+    }
+  </script>
+</body>
+</html>
