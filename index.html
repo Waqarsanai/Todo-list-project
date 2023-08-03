@@ -70,7 +70,6 @@
   <div class="js-todo-list todo-grid"></div>
 
   <script>
-    // Check for stored todo list data in local storage
     const storedTodoList = localStorage.getItem('todoList');
     const todoList = storedTodoList ? JSON.parse(storedTodoList) : [];
 
@@ -97,6 +96,7 @@
         deleteButton.addEventListener('click', () => {
           const index = deleteButton.dataset.index;
           todoList.splice(index, 1);
+          localStorage.setItem('todoList', JSON.stringify(todoList)); // Update local storage after deletion
           renderTodoList();
         });
       });
@@ -108,23 +108,28 @@
 
     function addTodo() {
       const inputElement = document.querySelector('.todo-name');
-      const name = inputElement.value;
+      const name = inputElement.value.trim(); // Remove leading/trailing spaces
 
       const dateInputElement = document.querySelector('.todo-date');
-      const dueDate = dateInputElement.value;
+      const dueDate = dateInputElement.value.trim(); // Remove leading/trailing spaces
 
-      todoList.push({
-        name,
-        dueDate
-      });
+      // Check if name and dueDate are not empty
+      if (name !== '' && dueDate !== '') {
+        todoList.push({
+          name,
+          dueDate
+        });
 
-      inputElement.value = '';
-      dateInputElement.value = '';
+        inputElement.value = '';
+        dateInputElement.value = '';
 
-      // Store the updated todo list in local storage
-      localStorage.setItem('todoList', JSON.stringify(todoList));
+        // Store the updated todo list in local storage
+        localStorage.setItem('todoList', JSON.stringify(todoList));
 
-      renderTodoList();
+        renderTodoList();
+      } else {
+        alert('Both Todo Name and Due Date are required.');
+      }
     }
   </script>
 </body>
